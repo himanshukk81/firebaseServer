@@ -129,13 +129,13 @@ exports.fcmSendMessage = functions.database.ref('/messages/{messageId}').onCreat
 	   .on("value", function(snapshot) {
 	   		var user=snapshot.val();
 	   		console.log("User info===="+JSON.stringify(user));
-	   		if(user.deviceToken)
+	   		if(user.deviceToken &&  user.login)
 	   		{
 	   			notificationToUser(user.deviceToken)
 	   		}
 	   		else
 	   		{
-	   			console.log("No Device token for user");
+	   			console.log("No Active Device token for user");
 	   		}
 
 
@@ -144,22 +144,22 @@ exports.fcmSendMessage = functions.database.ref('/messages/{messageId}').onCreat
 
 	    		console.log("user token145===="+token);
 	    		const payload = {
-				    notification: {
+				    "notification": {
 				      "title":"New Messages",
 				      "body":data.editorMsg,
 				      "sound":"default",
 				      "click_action": "FCM_PLUGIN_ACTIVITY",
 				      "icon": "https://placeimg.com/250/250/people",
 				    },
-				    data:
+				    "data":
 				        {
 				        	"receiverId":data.receiverId,
 					        "message":data.editorMsg,
 					        "content-available": '1' //FOR CALLING ON NOTIFACATION FUNCTION EVEN IF THE APP IS IN BACKGROUND
 					    },
-				    "to":token,
-					"priority":"high",
 				};
+
+				// console.log("Pay load info==="+JSON.stringify(pay))
 	    		admin.messaging().sendToDevice(token, payload).then((res)=>{
 	    			console.log("Successfully notify user"+JSON.stringify(res));
 	    		},error=>{
