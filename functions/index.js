@@ -180,16 +180,15 @@ exports.fcmSendMessage = functions.database.ref('/messages/{messageId}').onCreat
 });
 
 
-exports.fcmSendMessage = functions.database.ref('/orders/{id}').onCreate(event => {
+
+exports.fcmCreateOrder = functions.database.ref('/orders/{id}').onCreate(event => {
   console.log("message sent============");
   var data=event.data.val();
   console.log("Data======"+JSON.stringify(data));
-  
-
 
   	if(data.status=='P')
   	{
-			const payload = {
+	   const payload = {
 		    notification: {
 		      title:"Hellooo",
 		      icon: "https://placeimg.com/250/250/people",
@@ -249,11 +248,20 @@ exports.fcmSendMessage = functions.database.ref('/orders/{id}').onCreate(event =
 		  console.log("The read failed: " + errorObject.code);
 		});	
   	}
-  	else
-  	{
+  	
+});
+
+exports.fcmUpdateOrder = functions.database.ref('/orders/{id}').onUpdate(event =>{
+  console.log("order updated now  ============");
+  var data=event.data.val();
+  console.log("Data3333333======"+JSON.stringify(data));
+  
   		admin.database()
 	   .ref(`/user_detail/${data.userId}`)
 	   .on("value", function(snapshot) {
+
+
+	   		console.log("get infor======"+snapshot)
 	   		var user=snapshot.val();
 	   		console.log("User info===="+JSON.stringify(user));
 	   		if(user.deviceToken &&  user.login)
@@ -289,8 +297,8 @@ exports.fcmSendMessage = functions.database.ref('/orders/{id}').onCreate(event =
 				    },
 				    "data":
 				        {
-				        	"receiverId":data.receiverId,
-					        "message":data.editorMsg,
+				        	"receiverId":data.userId,
+					        "message":message,
 					        "content-available": '1' //FOR CALLING ON NOTIFACATION FUNCTION EVEN IF THE APP IS IN BACKGROUND
 					    },
 				};
@@ -312,7 +320,8 @@ exports.fcmSendMessage = functions.database.ref('/orders/{id}').onCreate(event =
 		}, function (errorObject) {
 		  console.log("The read failed: " + errorObject.code);
 		});
-  	}
-  	
-
 });
+
+
+
+ 
